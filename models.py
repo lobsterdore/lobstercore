@@ -12,17 +12,18 @@ class BaseEntity():
                                       if isinstance(p, ColumnProperty)]
         data = dict([(name, getattr(self, name))
                      for name in col_prop_names if name not in exclude])
-        for rname, rdeep in deep.iteritems():
-            dbdata = getattr(self, rname)
-            #FIXME: use attribute names (ie coltoprop) instead of column names
-            fks = object_mapper(self).get_property(rname).remote_side
-            exclude = [c.name for c in fks]
-            if dbdata is None:
-                data[rname] = None
-            elif isinstance(dbdata, list):
-                data[rname] = [o.to_dict(rdeep, exclude) for o in dbdata]
-            else:
-                data[rname] = dbdata.to_dict(rdeep, exclude)
+        if deep:
+            for rname, rdeep in deep.iteritems():
+                dbdata = getattr(self, rname)
+                #FIXME: use attribute names (ie coltoprop) instead of column names
+                fks = object_mapper(self).get_property(rname).remote_side
+                exclude = [c.name for c in fks]
+                if dbdata is None:
+                    data[rname] = None
+                elif isinstance(dbdata, list):
+                    data[rname] = [o.to_dict(rdeep, exclude) for o in dbdata]
+                else:
+                    data[rname] = dbdata.to_dict(rdeep, exclude)
         return data
     
 class Site(Base, BaseEntity):
