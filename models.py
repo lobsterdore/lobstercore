@@ -31,9 +31,11 @@ class Site(Base, BaseEntity):
     __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
     id = Column(Integer, primary_key=True)
     title = Column(String(250), unique=True)
+    shortcode = Column(String(20), unique=True)
     
-    def __init__(self, title):
+    def __init__(self, title, shortcode):
         self.title = title
+        self.shortcode = shortcode
         
     def __repr__(self):
         return '%r' % (self.title)
@@ -46,7 +48,7 @@ class Section(Base, BaseEntity):
     title = Column(String(250))
     slug = Column(String(250), unique=True)
     
-    site = relationship('Site', backref=backref('sections', order_by=id))
+    site = relationship('Site', backref=backref('sections', order_by=id, cascade="all,delete"))
 
     def __init__(self, title, slug, site):
         self.title = title
@@ -55,12 +57,6 @@ class Section(Base, BaseEntity):
 
     def __repr__(self):
         return '%r' % (self.title)
-
-
-#content_section = Table('content_section', Base.metadata,
-#    Column('content_id', Integer, ForeignKey('content.id')),
-#    Column('section_id', Integer, ForeignKey('section.id'))
-#)
 
 class Content(Base, BaseEntity):
     __tablename__ = 'content'
@@ -72,7 +68,7 @@ class Content(Base, BaseEntity):
     body = Column(Text())
     publish_date = Column(DateTime(), nullable = True)
     
-    section = relationship('Section', backref=backref('contents', order_by=id))
+    section = relationship('Section', backref=backref('contents', order_by=id, cascade="all,delete"))
     
     #sections = relationship('Section', secondary=content_section)
 
@@ -97,7 +93,7 @@ class User(Base, BaseEntity):
     email = Column(String(250), unique=True)
     password = Column(String(250))
 
-    sites = relationship('Site', secondary=user_site)
+    sites = relationship('Site', secondary=user_site, backref=backref('users', order_by=id, cascade="all,delete"))
 
     def __init__(self, email, password, sites):
         self.email = email
