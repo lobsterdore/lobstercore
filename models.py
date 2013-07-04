@@ -1,6 +1,10 @@
 from sqlalchemy import Column, Integer, String, Text, Table, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref, ColumnProperty, object_mapper
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import event
+
+import logging, json, pysolr, datetime
+from time import mktime
 
 Base = declarative_base()
 
@@ -72,10 +76,11 @@ class Content(Base, BaseEntity):
     
     #sections = relationship('Section', secondary=content_section)
 
-    def __init__(self, title, slug, body, section):
+    def __init__(self, title, slug, body, publish_date, section):
         self.title = title
         self.slug = slug
         self.body = body
+        self.publish_date = publish_date
         self.section = section
 
     def __repr__(self):
@@ -102,3 +107,36 @@ class User(Base, BaseEntity):
 
     def __repr__(self):
         return '%r' % (self.email)
+
+def update_search(mapper, connection, target):
+    solr = pysolr.Solr('http://localhost:8983/solr/', timeout=10)
+    solr.add([
+        {
+            "id": target.id,
+            "type": "Content",
+            "title": target.title,
+            #"slug": target.slug,
+            "text": target.body,
+            "category": target.section.title,
+            "data": json.dumps( target.to_dict({'section' : {}}), cls = datetime_json_encoder)
+            #"publish_date": target.publish_date,
+            #"section_title": target.section.title,
+            #"section_slug": target.section.slug
+        }
+    ])
+    
+def remove_from_search(mapper, connection, target):
+    solr = pysolr.Solr('http://localhost:8983/solr/', timeout=10)
+    solr.delete(id=target.id)
+
+event.listen(Content, 'after_insert', update_search)    
+event.listen(Content, 'after_update', update_search)
+event.listen(Content, 'after_delete', remove_from_search)
+
+class datetime_json_encoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return int(mktime(obj.timetuple()))
+
+        return json.JSONEncoder.default(self, obj)
