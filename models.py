@@ -68,7 +68,9 @@ class Content(Base, BaseEntity):
     id = Column(Integer, primary_key=True)
     section_id = Column(Integer, ForeignKey('section.id'))
     title = Column(String(250))
-    slug = Column(String(250), unique=True)
+    slug = Column(String(250), unique=True)    
+    meta_title = Column(String(250))
+    meta_description = Column(String(250))
     body = Column(Text())
     publish_date = Column(DateTime(), nullable = True)
     
@@ -76,9 +78,11 @@ class Content(Base, BaseEntity):
     
     #sections = relationship('Section', secondary=content_section)
 
-    def __init__(self, title, slug, body, publish_date, section):
+    def __init__(self, title, slug, meta_title, meta_description, body, publish_date, section):
         self.title = title
         self.slug = slug
+        self.meta_title = meta_title
+        self.meta_description = meta_description
         self.body = body
         self.publish_date = publish_date
         self.section = section
