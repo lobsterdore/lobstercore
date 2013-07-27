@@ -73,10 +73,10 @@ class Content(Base, BaseEntity):
     meta_description = Column(String(250))
     body = Column(Text())
     publish_date = Column(DateTime(), nullable = True)
-    
+    created_on = Column(DateTime, default=datetime.datetime.now)
+    updated_on = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
+
     section = relationship('Section', backref=backref('contents', order_by=id, cascade="all,delete"))
-    
-    #sections = relationship('Section', secondary=content_section)
 
     def __init__(self, title, slug, meta_title, meta_description, body, publish_date, section):
         self.title = title
