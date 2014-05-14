@@ -11,3 +11,4 @@ itsdangerous==0.24
 language-selector==0.1
 pysolr==3.2.0
 requests==2.2.1
+Flask-ini==0.1.0

@@ -1,15 +1,13 @@
-from sqlalchemy import Column, Integer, String, Text, Table, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Text, Table, ForeignKey, DateTime, event
 from sqlalchemy.orm import relationship, backref, ColumnProperty, object_mapper
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import event
-
-import logging, json, pysolr, datetime
 from time import mktime
+import datetime
 
 Base = declarative_base()
 
 class BaseEntity():
-    
+
     def to_dict(self, deep={}, exclude=[]):
         """Generate a JSON-style nested dict/list structure from an selfect."""
         col_prop_names = [p.key for p in object_mapper(self).iterate_properties \
@@ -29,21 +27,21 @@ class BaseEntity():
                 else:
                     data[rname] = dbdata.to_dict(rdeep, exclude)
         return data
-    
+
 class Site(Base, BaseEntity):
     __tablename__ = 'site'
     __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
     id = Column(Integer, primary_key=True)
     title = Column(String(250), unique=True)
     shortcode = Column(String(20), unique=True)
-    
+
     def __init__(self, title, shortcode):
         self.title = title
         self.shortcode = shortcode
-        
+
     def __repr__(self):
         return '%r' % (self.title)
-        
+
 class Section(Base, BaseEntity):
     __tablename__ = 'section'
     __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
@@ -51,7 +49,7 @@ class Section(Base, BaseEntity):
     site_id = Column(Integer, ForeignKey('site.id'))
     title = Column(String(250))
     slug = Column(String(250), unique=True)
-    
+
     site = relationship('Site', backref=backref('sections', order_by=id, cascade="all,delete"))
 
     def __init__(self, title, slug, site):
@@ -68,7 +66,7 @@ class Content(Base, BaseEntity):
     id = Column(Integer, primary_key=True)
     section_id = Column(Integer, ForeignKey('section.id'))
     title = Column(String(250))
-    slug = Column(String(250), unique=True)    
+    slug = Column(String(250), unique=True)
     meta_title = Column(String(250))
     meta_description = Column(String(250))
     body = Column(Text())
@@ -89,7 +87,7 @@ class Content(Base, BaseEntity):
 
     def __repr__(self):
         return '%r' % (self.title)
-        
+
 user_site = Table('user_site', Base.metadata,
     Column('user_id', Integer, ForeignKey('user.id')),
     Column('site_id', Integer, ForeignKey('site.id'))
@@ -128,19 +126,17 @@ def update_search(mapper, connection, target):
             #"section_slug": target.section.slug
         }
     ])
-    
+
 def remove_from_search(mapper, connection, target):
     solr = pysolr.Solr('http://localhost:8983/solr/', timeout=10)
     solr.delete(id=target.id)
 
-event.listen(Content, 'after_insert', update_search)    
+event.listen(Content, 'after_insert', update_search)
 event.listen(Content, 'after_update', update_search)
 event.listen(Content, 'after_delete', remove_from_search)
 
-class datetime_json_encoder(json.JSONEncoder):
-
+class DatetimeJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return int(mktime(obj.timetuple()))
-
         return json.JSONEncoder.default(self, obj)
