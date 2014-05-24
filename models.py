@@ -2,7 +2,9 @@ from sqlalchemy import Column, Integer, String, Text, Table, ForeignKey, DateTim
 from sqlalchemy.orm import relationship, backref, ColumnProperty, object_mapper
 from sqlalchemy.ext.declarative import declarative_base
 from time import mktime
-import datetime
+import datetime, json
+from spanglecore.search.documents import ContentDocument
+from spanglecore.utils import DatetimeJsonEncoder
 
 Base = declarative_base()
 
@@ -88,6 +90,17 @@ class Content(Base, BaseEntity):
     def __repr__(self):
         return '%r' % (self.title)
 
+    def get_search_document(self):
+      document = ContentDocument(
+          id = self.id,
+          type = "Content",
+          title = self.title,
+          text = self.body,
+          category = self.section.title,
+          data =  json.dumps( self.to_dict({'section' : {}}), cls = DatetimeJsonEncoder)
+      )
+      return document
+
 user_site = Table('user_site', Base.metadata,
     Column('user_id', Integer, ForeignKey('user.id')),
     Column('site_id', Integer, ForeignKey('site.id'))
@@ -109,34 +122,3 @@ class User(Base, BaseEntity):
 
     def __repr__(self):
         return '%r' % (self.email)
-
-def update_search(mapper, connection, target):
-    solr = pysolr.Solr('http://localhost:8983/solr/', timeout=10)
-    solr.add([
-        {
-            "id": target.id,
-            "type": "Content",
-            "title": target.title,
-            #"slug": target.slug,
-            "text": target.body,
-            "category": target.section.title,
-            "data": json.dumps( target.to_dict({'section' : {}}), cls = datetime_json_encoder)
-            #"publish_date": target.publish_date,
-            #"section_title": target.section.title,
-            #"section_slug": target.section.slug
-        }
-    ])
-
-def remove_from_search(mapper, connection, target):
-    solr = pysolr.Solr('http://localhost:8983/solr/', timeout=10)
-    solr.delete(id=target.id)
-
-event.listen(Content, 'after_insert', update_search)
-event.listen(Content, 'after_update', update_search)
-event.listen(Content, 'after_delete', remove_from_search)
-
-class DatetimeJsonEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime.datetime):
-            return int(mktime(obj.timetuple()))
-        return json.JSONEncoder.default(self, obj)

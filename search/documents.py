@@ -1,11 +1,11 @@
 
 class ContentDocument:
-	 id = None
-	 type = None
-	 title = None
-	 text = None
-	 category = None
-	 data = None
+	id = None
+	type = None
+	title = None
+	text = None
+	category = None
+	data = None
 
 	def __init__(self, id, type, title, text, category, data):
 		self.id = id
