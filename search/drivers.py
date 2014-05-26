@@ -2,7 +2,7 @@ import pysolr, json, datetime, ConfigParser, os
 from abc import ABCMeta, abstractmethod, abstractproperty
 from time import mktime
 from sqlalchemy import event
-from spanglecore.models import Content
+from lobstercore.models import Content
 
 class Driver:
 	__metaclass__ = ABCMeta
@@ -48,7 +48,7 @@ def get_driver():
 	driver = False
 
 	config = ConfigParser.ConfigParser()
-	config.read(os.environ.get('SPANGLE_CORE_CONFIG'))
+	config.read(os.environ.get('LOBSTERCORE_CONFIG'))
 	driver_config = dict(config.items('search'))
 
 	if config.get('search', 'enabled', False) is False:

@@ -3,8 +3,8 @@ from sqlalchemy.orm import relationship, backref, ColumnProperty, object_mapper
 from sqlalchemy.ext.declarative import declarative_base
 from time import mktime
 import datetime, json
-from spanglecore.search.documents import ContentDocument
-from spanglecore.utils import DatetimeJsonEncoder
+from lobstercore.search.documents import ContentDocument
+from lobstercore.utils import DatetimeJsonEncoder
 
 Base = declarative_base()
 

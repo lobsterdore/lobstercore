@@ -1,5 +1,11 @@
 
-class ContentDocument:
+class Document:
+	id = None
+
+	def __init__(self, id):
+		self.id = id
+
+class ContentDocument(Document):
 	id = None
 	type = None
 	title = None
