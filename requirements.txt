@@ -1,4 +1,0 @@
-MySQL-python==1.2.3
-SQLAlchemy==0.9.4
-pysolr==3.2.0
-Flask-ini==0.1.0
