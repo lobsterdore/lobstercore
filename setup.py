@@ -29,7 +29,7 @@ setup(
         'Programming Language :: Python :: 2.7',
     ],
     keywords='lobsterdore',
-    packages=['lobstercore'],
+    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     install_requires=[
         'MySQL-python>=1.2.3',
         'SQLAlchemy>=0.9.4',
