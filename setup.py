@@ -12,7 +12,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='lobstercore',
-    version='1.0.0',
+    version='0.0.1',
     description='Lobstercore module',
     long_description=long_description,
     url='https://github.com/lobsterdore/lobstercore',
@@ -29,11 +29,12 @@ setup(
         'Programming Language :: Python :: 2.7',
     ],
     keywords='lobsterdore',
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    packages=['lobstercore', 'lobstercore.search'],
     install_requires=[
         'MySQL-python>=1.2.3',
         'SQLAlchemy>=0.9.4',
         'pysolr>=3.2.0',
-        'Flask-ini>=0.1.0',
+        'Flask-ini>=0.2.1',
     ],
+    zip_safe=False,
 )
