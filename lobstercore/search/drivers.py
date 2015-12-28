@@ -47,7 +47,7 @@ def register():
 def get_driver():
 	driver = False
 	config = ConfigParser.ConfigParser()
-	config.read(['/etc/lobstercms.conf', os.environ.get('LOBSTER_CONFIG')])
+	config.read('/etc/lobstercms.conf')
 	driver_config = dict(config.items('search'))
 
 	if config.get('search', 'enabled', False) is False:
