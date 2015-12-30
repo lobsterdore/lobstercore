@@ -17,6 +17,18 @@ class Driver:
     pass
 
   @abstractmethod
+  def drop_index(self):
+    pass
+
+  @abstractmethod
+  def create_index(self):
+    pass
+
+  @abstractmethod
+  def reindex(self, db_session):
+    pass
+
+  @abstractmethod
   def update(self, mapper, connection, target):
     pass
 
@@ -25,9 +37,33 @@ class Driver:
     pass
 
 class ElasticsearchDriver(Driver):
+  __connection__ = False
 
   def connect(self):
-    return Elasticsearch(self.config['endpoint'], request_timeout=15)
+    if not self.__connection__:
+       self.__connection__ = Elasticsearch(self.config['endpoint'], request_timeout=15)
+    return self.__connection__
+
+  def drop_index(self):
+    es = self.connect()
+    es.indices.delete(index = self.config['index'])
+    pass
+
+  def create_index(self):
+    es = self.connect()
+    es.indices.create(index = self.config['index'])
+    pass
+
+  def reindex(self, db_session):
+    es = self.connect()
+    contents = db_session.query(Content).order_by(Content.id)
+    for content in contents:
+      es.index(
+        index = self.config['index'],
+        doc_type = content.__name__,
+        body = content.to_dict(),
+        id = content.id
+      )
 
   def update(self, mapper, connection, target):
     es = self.connect()
@@ -79,3 +115,11 @@ def dispatch_delete(mapper, connection, target):
   if driver is False:
     return
   driver.delete(mapper, connection, target)
+
+def initialise(db_session):
+  driver = get_driver()
+  if driver is False:
+    return
+  driver.drop_index()
+  driver.create_index()
+  driver.reindex(db_session)

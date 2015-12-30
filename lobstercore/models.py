@@ -8,6 +8,8 @@ from lobstercore.utils import DatetimeJsonEncoder
 Base = declarative_base()
 
 class BaseEntity():
+    __default_deep__ = {}
+    __default_exclude__ = []
 
     def to_dict(self, deep={}, exclude=[]):
         """Generate a JSON-style nested dict/list structure from an selfect."""
@@ -15,6 +17,13 @@ class BaseEntity():
                                       if isinstance(p, ColumnProperty)]
         data = dict([(name, getattr(self, name))
                      for name in col_prop_names if name not in exclude])
+
+        # objects can provide a default view
+        if not deep:
+          deep = self.__default_deep__
+        if not exclude:
+          exclude = self.__default_exclude__
+
         if deep:
             for rname, rdeep in deep.iteritems():
                 dbdata = getattr(self, rname)
@@ -30,6 +39,7 @@ class BaseEntity():
         return data
 
 class Site(Base, BaseEntity):
+    __name__ = 'site'
     __tablename__ = 'site'
     __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
     id = Column(Integer, primary_key=True)
@@ -44,6 +54,7 @@ class Site(Base, BaseEntity):
         return '%r' % (self.title)
 
 class Section(Base, BaseEntity):
+    __name__ = 'section'
     __tablename__ = 'section'
     __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
     id = Column(Integer, primary_key=True)
@@ -65,6 +76,8 @@ class Content(Base, BaseEntity):
     __name__ = 'content'
     __tablename__ = 'content'
     __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
+    __default_deep__ = { 'section' : {} }
+
     id = Column(Integer, primary_key=True)
     section_id = Column(Integer, ForeignKey('section.id'))
     title = Column(String(250))
@@ -96,6 +109,7 @@ user_site = Table('user_site', Base.metadata,
 )
 
 class User(Base, BaseEntity):
+    __name__ = 'user'
     __tablename__ = 'user'
     __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
     id = Column(Integer, primary_key=True)
