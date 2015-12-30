@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship, backref, ColumnProperty, object_mapper
 from sqlalchemy.ext.declarative import declarative_base
 from time import mktime
 import datetime, json
-from lobstercore.search.documents import ContentDocument
 from lobstercore.utils import DatetimeJsonEncoder
 
 Base = declarative_base()
@@ -63,6 +62,7 @@ class Section(Base, BaseEntity):
         return '%r' % (self.title)
 
 class Content(Base, BaseEntity):
+    __name__ = 'content'
     __tablename__ = 'content'
     __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
     id = Column(Integer, primary_key=True)
@@ -89,17 +89,6 @@ class Content(Base, BaseEntity):
 
     def __repr__(self):
         return '%r' % (self.title)
-
-    def get_search_document(self):
-      document = ContentDocument(
-          id = self.id,
-          type = "Content",
-          title = self.title,
-          text = self.body,
-          category = self.section.title,
-          data =  json.dumps( self.to_dict({'section' : {}}), cls = DatetimeJsonEncoder)
-      )
-      return document
 
 user_site = Table('user_site', Base.metadata,
     Column('user_id', Integer, ForeignKey('user.id')),
