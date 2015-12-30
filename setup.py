@@ -35,6 +35,7 @@ setup(
         'SQLAlchemy>=0.9.4',
         'pysolr>=3.2.0',
         'Flask-ini>=0.2.1',
+        'elasticsearch>=1.0.0,<2.0.0',
     ],
     zip_safe=False,
 )
