@@ -36,6 +36,10 @@ class Driver:
   def delete(self, mapper, connection, target):
     pass
 
+  @abstractmethod
+  def search(self, doc_type, query):
+    pass
+
 class ElasticsearchDriver(Driver):
   __connection__ = False
 
@@ -80,6 +84,14 @@ class ElasticsearchDriver(Driver):
       index = self.config['index'],
       doc_type = target.__name__,
       id = target.id
+    )
+
+  def search(self, doc_type, query):
+    es = self.connect()
+    return es.search(
+      index = self.config['index'],
+      doc_type = doc_type,
+      q = query
     )
 
 def register():
