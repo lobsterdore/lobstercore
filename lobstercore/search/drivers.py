@@ -135,3 +135,9 @@ def initialise(db_session):
   driver.drop_index()
   driver.create_index()
   driver.reindex(db_session)
+
+def search(doc_type, query):
+  driver = get_driver()
+  if driver is False:
+    return
+  driver.search(doc_type, query)
