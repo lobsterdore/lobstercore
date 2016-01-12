@@ -88,11 +88,19 @@ class ElasticsearchDriver(Driver):
 
   def search(self, doc_type, query):
     es = self.connect()
-    return es.search(
+    results = es.search(
       index = self.config['index'],
       doc_type = doc_type,
       q = query
     )
+    resultset = []
+    if results['hits']['total'] == 0:
+      return resultset
+
+    for result in results['hits']['hits']:
+      resultset.append(result['_source'])
+
+    return resultset
 
 def register():
   event.listen(Content, 'after_insert', dispatch_update)
@@ -140,4 +148,4 @@ def search(doc_type, query):
   driver = get_driver()
   if driver is False:
     return
-  driver.search(doc_type, query)
+  return driver.search(doc_type, query)
