@@ -64,7 +64,7 @@ class ElasticsearchDriver(Driver):
     for content in contents:
       es.index(
         index = self.config['index'],
-        doc_type = content.__name__,
+        doc_type = content.__name__.lower(),
         body = content.to_dict(),
         id = content.id
       )
@@ -73,7 +73,7 @@ class ElasticsearchDriver(Driver):
     es = self.connect()
     es.index(
       index = self.config['index'],
-      doc_type = target.__name__,
+      doc_type = target.__name__.lower(),
       body = target.to_dict(),
       id = target.id
     )
@@ -82,7 +82,7 @@ class ElasticsearchDriver(Driver):
     es = self.connect()
     es.delete(
       index = self.config['index'],
-      doc_type = target.__name__,
+      doc_type = target.__name__.lower(),
       id = target.id
     )
 
@@ -90,7 +90,7 @@ class ElasticsearchDriver(Driver):
     es = self.connect()
     results = es.search(
       index = self.config['index'],
-      doc_type = doc_type,
+      doc_type = doc_type.lower(),
       q = query
     )
     resultset = []
