@@ -50,13 +50,12 @@ class ElasticsearchDriver(Driver):
 
   def drop_index(self):
     es = self.connect()
-    es.indices.delete(index = self.config['index'])
-    pass
+    if es.indices.exists(index = self.config['index']):
+      es.indices.delete(index = self.config['index'])
 
   def create_index(self):
     es = self.connect()
     es.indices.create(index = self.config['index'])
-    pass
 
   def reindex(self, db_session):
     es = self.connect()
