@@ -5,6 +5,8 @@ from sqlalchemy import event
 from elasticsearch import Elasticsearch
 from lobstercore.models import Content
 
+search_config = {}
+
 class Driver:
   __metaclass__ = ABCMeta
   config = {}
@@ -82,25 +84,20 @@ class ElasticsearchDriver(Driver):
       id = target.id
     )
 
-def register():
+def register(config):
+  driver_config = dict(config.items('search'))
   event.listen(Content, 'after_insert', dispatch_update)
   event.listen(Content, 'after_update', dispatch_update)
   event.listen(Content, 'after_delete', dispatch_delete)
 
 def get_driver():
   driver = False
-  config = ConfigParser.ConfigParser()
-  config.read('/etc/lobstercms.conf')
-  driver_config = dict(config.items('search'))
 
-  if config.get('search', 'enabled', False) is False:
+  if driver_config.get('enabled', False) is False:
     return driver
 
-  if config.get('search', 'driver') == 'solr':
-    driver = SolrDriver(driver_config);
-
-  if config.get('search', 'driver') == 'elasticsearch':
-    driver = ElasticsearchDriver(driver_config);
+  if config.get('driver') == 'elasticsearch':
+    driver = ElasticsearchDriver(driver_config)
 
   return driver
 
