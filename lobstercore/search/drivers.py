@@ -5,7 +5,7 @@ from sqlalchemy import event
 from elasticsearch import Elasticsearch
 from lobstercore.models import Content
 
-search_config = {}
+driver_config = {}
 
 class Driver:
   __metaclass__ = ABCMeta
