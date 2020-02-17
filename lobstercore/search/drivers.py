@@ -93,6 +93,8 @@ def register(config):
 def get_driver():
   driver = False
 
+  print(config.get('driver'))
+
   if driver_config.get('enabled', False) is False:
     return driver
 
