@@ -60,13 +60,22 @@ class ElasticsearchDriver(Driver):
 
     def drop_index(self):
         es = self.connect()
-        es.indices.delete(index=self.config["index"], allow_no_indices=True, ignore_unavailable=True)
-        pass
+        es.indices.delete(
+            index=self.config["index"],
+            allow_no_indices=True,
+            ignore_unavailable=True,
+        )
 
     def create_index(self):
         es = self.connect()
-        es.indices.create(index=self.config["index"])
-        pass
+        es.indices.create(
+            index=self.config["index"],
+            body={
+                "settings": {
+                    "index": {"number_of_shards": 1, "number_of_replicas": 0}
+                }
+            },
+        )
 
     def reindex(self, db_session):
         es = self.connect()
@@ -90,7 +99,9 @@ class ElasticsearchDriver(Driver):
 
     def delete(self, mapper, connection, target):
         es = self.connect()
-        es.delete(index=self.config["index"], doc_type=target.__name__, id=target.id)
+        es.delete(
+            index=self.config["index"], doc_type=target.__name__, id=target.id
+        )
 
     def search(self, doc_type, query):
         es = self.connect()

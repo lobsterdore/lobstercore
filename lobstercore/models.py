@@ -1,4 +1,13 @@
-from sqlalchemy import Column, Integer, String, Text, Table, ForeignKey, DateTime, event
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Text,
+    Table,
+    ForeignKey,
+    DateTime,
+    event,
+)
 from sqlalchemy.orm import relationship, backref, ColumnProperty, object_mapper
 from sqlalchemy.ext.declarative import declarative_base
 from time import mktime
@@ -106,11 +115,19 @@ class Content(Base, BaseEntity):
     )
 
     section = relationship(
-        "Section", backref=backref("contents", order_by=id, cascade="all,delete")
+        "Section",
+        backref=backref("contents", order_by=id, cascade="all,delete"),
     )
 
     def __init__(
-        self, title, slug, meta_title, meta_description, body, publish_date, section
+        self,
+        title,
+        slug,
+        meta_title,
+        meta_description,
+        body,
+        publish_date,
+        section,
     ):
         self.title = title
         self.slug = slug
