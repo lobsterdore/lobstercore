@@ -60,7 +60,7 @@ class ElasticsearchDriver(Driver):
 
     def drop_index(self):
         es = self.connect()
-        es.indices.delete(index=self.config["index"])
+        es.indices.delete(index=self.config["index"], allow_no_indices=True, ignore_unavailable=True)
         pass
 
     def create_index(self):
