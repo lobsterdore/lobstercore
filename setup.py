@@ -12,7 +12,6 @@ with open(path.join(here, "README.rst"), encoding="utf-8") as f:
 
 setup(
     name="lobstercore",
-    version="0.0.2",
     description="Lobstercore module",
     long_description=long_description,
     url="https://github.com/lobsterdore/lobstercore",
@@ -24,17 +23,20 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.7",
     ],
     keywords="lobsterdore",
     packages=["lobstercore", "lobstercore.search"],
     install_requires=[
-        "MySQL-python>=1.2.3",
+        "mysqlclient>=1.4.6",
         "SQLAlchemy>=0.9.4",
         "Flask-ini>=0.2.1",
         "elasticsearch>=7.5.1",
+    ],
+    use_scm_version=True,
+    setup_requires=[
+        'setuptools_scm',
+        'setuptools_scm_git_archive',
     ],
     zip_safe=False,
 )
