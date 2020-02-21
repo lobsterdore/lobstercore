@@ -1,5 +1,4 @@
 import datetime
-import ConfigParser
 import json
 import os
 

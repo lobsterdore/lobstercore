@@ -43,7 +43,7 @@ class BaseEntity:
             exclude = self.__default_exclude__
 
         if deep:
-            for rname, rdeep in deep.iteritems():
+            for rname, rdeep in deep.items():
                 dbdata = getattr(self, rname)
                 # FIXME: use attribute names (ie coltoprop) instead of column names
                 fks = object_mapper(self).get_property(rname).remote_side
