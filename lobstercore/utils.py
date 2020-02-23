@@ -17,9 +17,9 @@ def get_config(base_dir):
     config = configparser.ConfigParser()
     config.optionxform = str
 
-    config.read("{}/lobstercms.defaults.conf".format(base_dir))
+    config.read("{}/config.defaults.conf".format(base_dir))
 
-    if os.path.isfile("{}/lobstercms.conf".format(base_dir)):
-        config.read("{}/lobstercms.conf".format(base_dir))
+    if os.path.isfile("{}/config.conf".format(base_dir)):
+        config.read("{}/config.conf".format(base_dir))
 
     return config
