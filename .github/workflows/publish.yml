@@ -1,0 +1,23 @@
+---
+
+name: Docker
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.17.2
+        id: tag_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
