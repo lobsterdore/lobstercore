@@ -28,7 +28,7 @@ setup(
     keywords="lobsterdore",
     packages=["lobstercore", "lobstercore.search"],
     install_requires=[
-        "mysqlclient>=1.4.6",
+        "PyMySQL==0.9.3",
         "SQLAlchemy>=0.9.4",
         "Flask-ini>=0.2.1",
         "elasticsearch>=7.5.1",
